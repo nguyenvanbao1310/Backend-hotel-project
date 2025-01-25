@@ -26,7 +26,6 @@ public class UserController {
 	@Autowired
 	private IUserService iUserSv;
 	
-	@Autowired
 	private OtpService otpService;
 	
 	@Autowired
@@ -134,6 +133,30 @@ public class UserController {
             return new ResponseEntity<>("Mã OTP không chính xác hoặc đã hết hạn.", HttpStatus.BAD_REQUEST);
         }
     }
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestBody Map<String, String> request) {
+	    String email = request.get("email");
+	    String password = request.get("password");
+
+	    if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+	        return ResponseEntity.badRequest().body("Email và mật khẩu không được để trống");
+	    }
+
+	    Optional<User> userOptional = iUserSv.findByEmail(email);
+	    if (userOptional.isPresent()) {
+	        User user = userOptional.get();
+
+	        // Kiểm tra mật khẩu bằng PasswordEncoder
+	        if (PasswordEncoder.checkPassword(password, user.getPassWord())) {
+	            return ResponseEntity.ok("Đăng nhập thành công!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mật khẩu không chính xác");
+	        }
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại");
+	    }
+	}
+
 }
         
 

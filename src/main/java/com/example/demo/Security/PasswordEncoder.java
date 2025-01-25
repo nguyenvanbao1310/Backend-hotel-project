@@ -23,4 +23,9 @@ public class PasswordEncoder
 	            throw new RuntimeException("Error while hashing password", e);
 	        }
 	 }
+	 // Hàm kiểm tra mật khẩu
+	 public static boolean checkPassword(String plainPassword, String hashedPassword) {
+	        String hashedInputPassword = hashPassword(plainPassword);
+	        return hashedInputPassword.equals(hashedPassword);
+	    }
 }
